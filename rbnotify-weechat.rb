@@ -8,7 +8,7 @@ SCRIPT_LICENSE = 'MIT'.freeze
 
 DEFAULTS = {
   'show_private_message' => 'on',
-  'show_highlight' => 'on'
+  'show_highlights' => 'on'
 }.freeze
 
 def weechat_init
@@ -48,7 +48,7 @@ def show_private(data, signal, message)
 end
 
 def show_highlight(data, signal, message)
-  if Weechat.config_get_plugin('show_highlight') == 'on'
+  if Weechat.config_get_plugin('show_highlights') == 'on'
     message[0..1] == '--' ? sticky = false : sticky = true
     show_notification('Highlight', 'Weechat',  message, sticky)
   end
