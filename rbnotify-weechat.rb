@@ -1,34 +1,37 @@
 #!/usr/bin/env ruby
 
-SCRIPT_NAME = 'rbnotify-weechat'
-SCRIPT_AUTHOR = 'Greg Fitzgerald <greg@gregf.org>'
-SCRIPT_DESC = 'Sends libnotify notifications upon events.'
-SCRIPT_VERSION = '0.2'
-SCRIPT_LICENSE = 'MIT'
+SCRIPT_NAME = 'rbnotify-weechat'.freeze
+SCRIPT_AUTHOR = 'Greg Fitzgerald <greg@gregf.org>'.freeze
+SCRIPT_DESC = 'Sends libnotify notifications upon events.'.freeze
+SCRIPT_VERSION = '0.2'.freeze
+SCRIPT_LICENSE = 'MIT'.freeze
 
 DEFAULTS = {
   'show_private_message' => 'on',
   'show_highlight' => 'on'
-}
-
+}.freeze
 
 def weechat_init
-  Weechat.register SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE, SCRIPT_DESC, "", ""
-  DEFAULTS.each_pair { |option, def_value|
+  Weechat.register SCRIPT_NAME,
+                   SCRIPT_AUTHOR,
+                   SCRIPT_VERSION,
+                   SCRIPT_LICENSE,
+                   SCRIPT_DESC,
+                   '',
+                   ''
+  DEFAULTS.each_pair do |option, def_value|
     cur_value = Weechat.config_get_plugin(option)
     if cur_value.nil? || cur_value.empty?
       Weechat.config_set_plugin(option, def_value)
     end
-  }
-
+  end
   hook_notifications
-
-  return Weechat::WEECHAT_RC_OK
+  Weechat::WEECHAT_RC_OK
 end
 
 def hook_notifications
-  Weechat.hook_signal("weechat_pv", "show_private", "")
-  Weechat.hook_signal("weechat_highlight", "show_highlight", "")
+  Weechat.hook_signal('weechat_pv', 'show_private', '')
+  Weechat.hook_signal('weechat_highlight', 'show_highlight', '')
 end
 
 def unhook_notifications(data, signal, message)
@@ -39,17 +42,17 @@ end
 def show_private(data, signal, message)
   if Weechat.config_get_plugin('show_private_message') == 'on'
     message[0..1] == '--' ? sticky = false : sticky = true
-    show_notification("Private", "Weechat Private Message",  message, sticky)
-    return Weechat::WEECHAT_RC_OK
+    show_notification('Private', 'Weechat Private Message',  message, sticky)
   end
+  Weechat::WEECHAT_RC_OK
 end
 
 def show_highlight(data, signal, message)
- if Weechat.config_get_plugin('show_highlight') == 'on'
+  if Weechat.config_get_plugin('show_highlight') == 'on'
     message[0..1] == '--' ? sticky = false : sticky = true
-    show_notification("Highlight", "Weechat",  message, sticky)
-    return Weechat::WEECHAT_RC_OK
+    show_notification('Highlight', 'Weechat',  message, sticky)
   end
+  Weechat::WEECHAT_RC_OK
 end
 
 def show_notification(name, title, message, sticky = true)
